@@ -2,6 +2,7 @@
 --  AUTOR:       @sfmolina  --
 --  Versión:     v1         --
 --  Modificado:  14feb24    --
+--  Licencia:    MIT        --
 ------------------------------
 
 
