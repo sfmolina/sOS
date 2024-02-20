@@ -17,8 +17,8 @@ sOS incluye su propia libreria de funciones para trabajar con textos en multiple
 
 Objetivos
 ---------
-La v1 estará completa cuando:
- - Se termine la interfaz principal de sOS para PCs.
+La v1 de sOS estará completa cuando:
+ - Se termine la interfaz principal para PCs.
  - Se optimice la interfaz para PCs de bolsillo.
  - Se proporcione control total sobre todo tipo de periféricos que pueden estar, o no, directamente conectados al PC.
  - Se den opciones de apagado y encendido seguros para el propio sOS.
@@ -46,8 +46,8 @@ sOS includes its own library of functions to work with texts on multiple screens
 
 Objectives
 ----------
-Version 1 will be complete when:
- - The main sOS interface for PCs is finished.
+sOS v1 will be complete when:
+ - The main interface for PCs is finished.
  - The interface is optimized for pocket PCs.
  - Full control is provided over all types of peripherals that may or may not be directly connected to the PC.
  - Safe shutdown and startup options are provided for sOS itself.
