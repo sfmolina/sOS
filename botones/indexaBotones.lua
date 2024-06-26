@@ -1,9 +1,25 @@
 ------------------------------
 --  AUTOR:       @sfmolina  --
 --  Versión:     v1         --
---  Modificado:  14feb24    --
+--  Modificado:  26jun24    --
 ------------------------------
 
+
+
+--- IMPORTS --------------------------------------------------------------------
+
+
+local control = dofile("sOS/sistema/control.lua")
+
+
+-- ATRIBUTOS -------------------------------------------------------------------
+
+
+local indexaBotones = {}
+
+
+
+--- FUNCIONES ------------------------------------------------------------------
 
 
 local function guardarBotones(tabla, nombrePanel)
@@ -12,7 +28,7 @@ local function guardarBotones(tabla, nombrePanel)
 
     local file = io.open(direccion, "w")  -- Abre el archivo en modo de escritura
 
-    local st = serializeTable(tabla, "botones")
+    local st = control.serializeTable(tabla, "botones")
 
     st = "local " .. st
 
@@ -25,7 +41,7 @@ local function guardarBotones(tabla, nombrePanel)
 
     -- Actualiza la lista completa de botones (paneles)
 
-    local listaBotones = getListaBotones()
+    local listaBotones = indexaBotones.getListaBotones()
 
     local posPanel = #listaBotones+1
     for k, v in pairs(listaBotones) do
@@ -39,7 +55,7 @@ local function guardarBotones(tabla, nombrePanel)
 
     file = io.open("sOS/botones/listaBotones.lua", "w")  -- Abre el archivo en modo de escritura
 
-    st = serializeTable(listaBotones, "paneles")
+    st = control.serializeTable(listaBotones, "paneles")
 
     st = "local " .. st
 
@@ -52,9 +68,9 @@ local function guardarBotones(tabla, nombrePanel)
 end
 
 
-function setBotonPanel(nombrePanel, nombreBoton, x, y)
+function indexaBotones.setBotonPanel(nombrePanel, nombreBoton, x, y)
 
-    local botones = getBotonesPanel(nombrePanel)
+    local botones = indexaBotones.getBotonesPanel(nombrePanel)
 
     -- Si no existe el botón, lo crea
     -- Si existe, lo actualiza
@@ -79,7 +95,7 @@ function setBotonPanel(nombrePanel, nombreBoton, x, y)
 end
 
 
-function getBotonesPanel(nombrePanel)
+function indexaBotones.getBotonesPanel(nombrePanel)
 
     local direccion = "sOS/botones/" .. nombrePanel .. ".lua"
 
@@ -93,7 +109,7 @@ function getBotonesPanel(nombrePanel)
 end
 
 
-function getListaBotones()
+function indexaBotones.getListaBotones()
 
     local exito, paneles = pcall(dofile, "sOS/botones/listaBotones.lua")
     if not exito then
@@ -103,3 +119,27 @@ function getListaBotones()
     return paneles
 
 end
+
+
+-- HAY UN BUG: SI HAY UN MONITOR CONECTADO NO DEVUELVE EL NOMBRE DE LA APP
+function indexaBotones.botonPanelPulsado(x, y)
+
+    local paneles = indexaBotones.getListaBotones()
+
+    for _, panel in pairs(paneles) do
+        local botones = indexaBotones.getBotonesPanel(panel)
+        for _, boton in pairs(botones) do
+
+            if (y == boton.y) and (boton.x <= x and x <= boton.tam) then
+                return boton.nombre, panel
+            end
+
+        end
+    end
+
+    return nil, nil
+
+end
+
+
+return indexaBotones

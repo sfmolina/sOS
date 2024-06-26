@@ -1,7 +1,7 @@
 ------------------------------
 --  AUTOR:       @sfmolina  --
 --  Versión:     v1         --
---  Modificado:  14feb24    --
+--  Modificado:  26jun24    --
 ------------------------------
 
 
@@ -9,15 +9,29 @@
 --- IMPORTS --------------------------------------------------------------------
 
 
-dofile("sOS/graficos.lua")
-dofile("sOS/configuracion.lua")
+--local graficos  = dofile("sOS/graficos.lua")
+local control   = dofile("sOS/sistema/control.lua")
 
+
+-- ATRIBUTOS -------------------------------------------------------------------
+
+
+local animaciones = {}
 
 
 --- FUNCIONES ------------------------------------------------------------------
 
 
-function barraEspera1(salida, tiempo, longitud, x, y)
+-- Displays a progress bar animation on the screen.
+--
+-- Parameters:
+--   - salida: The output terminal or window to display the progress bar.
+--   - tiempo: The total time (in seconds) for the animation to complete.
+--   - longitud: The length of the progress bar.
+--   - x: The x-coordinate of the top-left corner of the progress bar.
+--   - y: The y-coordinate of the top-left corner of the progress bar.
+--
+function animaciones.barraEspera1(salida, tiempo, longitud, x, y)
 
     if salida == term then
         salida = term.current()
@@ -36,9 +50,12 @@ function barraEspera1(salida, tiempo, longitud, x, y)
     barra.write(progreso)
 
     for i = 1, longitud do
-        sleep(espera)
+        control.dormir(espera)
         barra.setCursorPos(pos+i, yBSize)
         barra.write("=")
     end
 
 end
+
+
+return animaciones

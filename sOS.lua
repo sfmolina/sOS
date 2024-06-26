@@ -1,7 +1,7 @@
 ------------------------------
 --  AUTOR:       @sfmolina  --
 --  Versión:     v1         --
---  Modificado:  14feb24    --
+--  Modificado:  26jun24    --
 ------------------------------
 
 
@@ -13,12 +13,11 @@
 --- IMPORTS --------------------------------------------------------------------
 
 
-dofile("sOS/graficos.lua")
-local pantallas = dofile("sOS/pantallas.lua")
-local perifericos = dofile("sOS/perifericos.lua")
-dofile("sOS/configuracion.lua") -- Cargar configuracion, variables en mayusculas y snake_case
-
-
+local graficos      = dofile("sOS/sistema/graficos.lua")
+local pantallas     = dofile("sOS/sistema/pantallas.lua")
+local perifericos   = dofile("sOS/sistema/perifericos.lua")
+local control       = dofile("sOS/sistema/control.lua")
+local instalacion   = dofile("sOS/sistema/instalacion.lua")
 
 
 --- ATRIBUTOS ------------------------------------------------------------------
@@ -26,54 +25,63 @@ dofile("sOS/configuracion.lua") -- Cargar configuracion, variables en mayusculas
 
 local salidaTexto = {term}                     -- Salida de texto, por defecto la terminal
 local salidaAudio = {}
-local colorDefecto = getConfig("COLORD_TEXTO")   -- Color por defecto de la salida de texto
-
+local colorDefecto = control.getConfig("COLORD_TEXTO")   -- Color por defecto de la salida de texto
 
 
 --- MAIN -----------------------------------------------------------------------
 
 
-limpiarPantallas(salidaTexto)
-colorear(salidaTexto, colorDefecto)
-escribirTextoLN(salidaTexto, "Bienvenido a sOS")
+if not instalacion.estaInstalado() then
+
+    instalacion.instalar()
+
+end
 
 
-dormirDefecto()
+graficos.limpiarPantallas(salidaTexto)
+graficos.colorear(salidaTexto, colorDefecto)
+graficos.escribirTextoLN(salidaTexto, "Bienvenido a sOS")
+
+
+control.dormir()
 
 
 -- Configurar perifericos, por ahora solo hay sopote para monitores (v1)
 perifericos.configurarPerfifericos(salidaTexto, salidaAudio)
 
 
-dormirDefecto()
+control.dormir()
 
 
-escribirTextoLN(salidaTexto, "Iniciando sistema...")
+graficos.escribirTextoLN(salidaTexto, "Iniciando sistema...")
 
 
-dormirDefecto()
+control.dormir()
 
 
-if not getConfig("SESION_INICIADA") then
+if not control.getConfig("SESION_INICIADA") then
 
     pantallas.inicioSesion(salidaTexto)
 
 end
 
 
-dormirDefecto()
+control.dormir()
 
 
-escribirTextoLN(salidaTexto, "Sistema iniciado")
+graficos.escribirTextoLN(salidaTexto, "Sistema iniciado")
 
 
-dormirDefecto()
+control.dormir()
 
 
 pantallas.bienvenida(salidaTexto)
 
 
-sleep(0.5)
+control.dormir(0.5)
 
+while true do
 
-pantallas.inicio(salidaTexto)
+    pantallas.inicio(salidaTexto)
+
+end

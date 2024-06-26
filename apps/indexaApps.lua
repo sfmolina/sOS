@@ -1,36 +1,52 @@
 ------------------------------
 --  AUTOR:       @sfmolina  --
 --  Versión:     v1         --
---  Modificado:  14feb24    --
+--  Modificado:  26jun24    --
 ------------------------------
 
 
 
-function obtenerFavoritos()
+--- IMPORTS --------------------------------------------------------------------
+
+
+
+--- ATRIBUTOS ------------------------------------------------------------------
+
+
+local indexaApps = {}
+
+
+--- FUNCIONES ------------------------------------------------------------------
+
+
+function indexaApps.obtenerFavoritos()
 
     return dofile("sOS/apps/favoritos.lua")
 
 end
 
 
-function obtenerAplicaciones()
+function indexaApps.obtenerAplicaciones()
 
     return dofile("sOS/apps/aplicaciones.lua")
 
 end
 
 
-function estaEnFavoritos(app)
+function indexaApps.estaEnFavoritos(app)
 
-    local favoritos = obtenerFavoritos()
+    local favoritos = indexaApps.obtenerFavoritos()
     return favoritos[app]
 
 end
 
 
-function estaInstalada(app)
+function indexaApps.estaInstalada(app)
 
-    local aplicaciones = obtenerAplicaciones()
+    local aplicaciones = indexaApps.obtenerAplicaciones()
     return aplicaciones[app]
 
 end
+
+
+return indexaApps

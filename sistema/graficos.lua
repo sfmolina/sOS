@@ -1,7 +1,7 @@
 ------------------------------
 --  AUTOR:       @sfmolina  --
 --  Versión:     v1         --
---  Modificado:  14feb24    --
+--  Modificado:  26jun24    --
 ------------------------------
 
 
@@ -9,43 +9,16 @@
 --- IMPORTS --------------------------------------------------------------------
 
 
-dofile("sOS/configuracion.lua")
+local control = dofile("sOS/sistema/control.lua")
 
+
+-- ATRIBUTOS -------------------------------------------------------------------
+
+
+local graficos = {}
 
 
 --- FUNCIONES ------------------------------------------------------------------
-
-
---- DEPRECATED
---- ############################################################################################
---- Calcula el factor de escala para un monitor en función de su tamaño y el número de aumentos.
---- Un monitor de 1 de ancho equivale a 0.5 de escala, uno de 2 a 0.5, uno de 3 a 0.5, uno de 4 a 1...
---- No se puede superar ni igualar el doble de la escala media de los monitores.
---- @param monitor Redirect El objeto del monitor.
---- @param aumentos number El número de aumentos.
---- @return number escala El factor de escala calculado (entre 0.5 y 5).
---- --------------------------------------
-function calcularEscala(monitor, aumentos)
-
-    local xTam, _ = monitor.getSize()
-    print(xTam)
-
-    local escalaMedia = (math.ceil(xTam / 3))/2
-
-    local escala = escalaMedia + (0.5 * aumentos)
-
-
-    while escala >= escalaMedia*2 do
-        escala = escala - 0.5
-    end
-
-
-    escala = math.max(escala, 0.5)
-    escala = math.min(escala, 5)
-
-    return escala
-
-end
 
 
 --- Verifica la altura de la ventana de salida y la desplaza si es necesario.
@@ -69,7 +42,7 @@ end
 --- @param texto string El texto que se va a escribir.
 --- @return table lineas Las líneas de texto divididas.
 --- ------------------------------------
-function comprobarAnchura(salida, texto)
+local function comprobarAnchura(salida, texto)
 
     local lineas = {}
     local xSize, _ = salida.getSize()
@@ -104,47 +77,70 @@ end
 --- @param salidas table Las salidas de texto en las que se va a escribir.
 --- @param texto string El texto que se va a escribir.
 --- ------------------------------------
-function escribirTextoLN(salidas, texto)
+function graficos.escribirTextoLN(salidas, texto)
+
+    local routines = {}
 
     for _, salida in ipairs(salidas) do
 
-        local lineas = comprobarAnchura(salida, texto)
+        table.insert(
+            routines,
+            function()
 
-        for _, linea in ipairs(lineas) do
+                local lineas = comprobarAnchura(salida, texto)
 
-            comprobarAltura(salida)
+                for _, linea in ipairs(lineas) do
 
-            salida.write(linea)
+                    comprobarAltura(salida)
 
-            local _, y = salida.getCursorPos()
-            salida.setCursorPos(1, y + 1)
+                    salida.write(linea)
 
-        end
+                    local _, y = salida.getCursorPos()
+                    salida.setCursorPos(1, y + 1)
+
+                end
+                
+            end
+        )
 
     end
+
+    parallel.waitForAll(table.unpack(routines))
 
 end
 
-function escribirTexto(salidas, texto)
+
+function graficos.escribirTexto(salidas, texto)
+
+    local routines = {}
 
     for _, salida in ipairs(salidas) do
 
-        local lineas = comprobarAnchura(salida, texto)
+        table.insert(
+            routines,
+            function()
 
-        for i, linea in ipairs(lineas) do
+                local lineas = comprobarAnchura(salida, texto)
 
-            comprobarAltura(salida)
+                for i, linea in ipairs(lineas) do
 
-            salida.write(linea)
+                    comprobarAltura(salida)
 
-            if i ~= #lineas then
-                local _, y = salida.getCursorPos()
-                salida.setCursorPos(1, y + 1)
+                    salida.write(linea)
+
+                    if i ~= #lineas then
+                        local _, y = salida.getCursorPos()
+                        salida.setCursorPos(1, y + 1)
+                    end
+
+                end
+
             end
-
-        end
+        )
 
     end
+
+    parallel.waitForAll(table.unpack(routines))
 
 end
 
@@ -152,17 +148,30 @@ end
 --- Limpia las pantallas especificadas en la tabla 'salidas'.
 --- @param salidas table Tabla que contiene las salidas a texto que se van a limpiar.
 --- ------------------------------
-function limpiarPantallas(salidas)
+function graficos.limpiarPantallas(salidas)
+
+    local routines = {}
+
     for _, salida in ipairs(salidas) do
-        salida.clear()
-        salida.setCursorPos(1, 1)
+
+        table.insert(
+            routines,
+            function()
+                salida.clear()
+                salida.setCursorPos(1, 1)
+            end
+        )
+
     end
+
+    parallel.waitForAll(table.unpack(routines))
+
 end
 
 
 --- DA ERRORES
 --- ################################################################################################
-function textoNormal(salidas)
+function graficos.textoNormal(salidas)
 
     for i = 2, #salidas do
         salidas[i].setTextScale(getConfig("TAM_TEXTO"))
@@ -172,7 +181,7 @@ end
 
 --- DA ERRORES
 --- ################################################################################################
-function textoGrande(salidas)
+function graficos.textoGrande(salidas)
 
     for i = 2, #salidas do
         salidas[i].setTextScale(getConfig("TAM_TEXTO_GRANDE"))
@@ -185,63 +194,96 @@ end
 --- @param salidas table La lista de salidas a colorear.
 --- @param color number El código de color para establecer en las salidas.
 --- -----------------------------
-function colorear(salidas, color)
+function graficos.colorear(salidas, color)
+
+    local routines = {}
 
     for _, salida in ipairs(salidas) do
-        salida.setTextColor(color)
+
+        table.insert(
+            routines,
+            function()
+                salida.setTextColor(color)
+            end
+        )
+
     end
+
+    parallel.waitForAll(table.unpack(routines))
 
 end
 
 
-function preguntarYN(salidas, pregunta)
+function graficos.preguntarYN(salidas, pregunta)
 
-    colorear(salidas, colors.yellow)
-    escribirTexto(salidas, pregunta .. " (s/n): ")
+    graficos.colorear(salidas, colors.yellow)
+    graficos.escribirTexto(salidas, pregunta .. " (s/n): ")
 
-    colorear(salidas, getConfig("COLORD_TEXTO"))
+    graficos.colorear(salidas, control.getConfig("COLORD_TEXTO"))
     if io.read() == "s" then
-        escribirTextoLN(salidas, "")
+        graficos.escribirTextoLN(salidas, "")
         return true
     else
-        escribirTextoLN(salidas, "")
+        graficos.escribirTextoLN(salidas, "")
         return false
     end
 
 end
 
 
-function centrarTextoX(salidas, texto)
+function graficos.centrarTextoX(salidas, texto)
+
+    local routines = {}
 
     for _, salida in ipairs(salidas) do
-        local xSize, _ = salida.getSize()
-        local _, yCursor = salida.getCursorPos()
-        salida.setCursorPos(math.floor((xSize/2)-(#texto/2) + 0.5), yCursor)
+
+        table.insert(
+            routines,
+            function()
+                local xSize, _ = salida.getSize()
+                local _, yCursor = salida.getCursorPos()
+                salida.setCursorPos(math.floor((xSize/2)-(#texto/2) + 0.5), yCursor)
+            end
+        )
+
     end
+
+    parallel.waitForAll(table.unpack(routines))
 
 end
 
 
-function centrarY(salidas)
+function graficos.centrarY(salidas)
+
+    local routines = {}
 
     for _, salida in ipairs(salidas) do
-        local xCursor, ySize = salida.getSize()
-        salida.setCursorPos(xCursor, math.floor(ySize/2))
+
+        table.insert(
+            routines,
+            function()
+                local xCursor, ySize = salida.getSize()
+                salida.setCursorPos(xCursor, math.floor(ySize/2))
+            end
+        )
+
     end
+
+    parallel.waitForAll(table.unpack(routines))
 
 end
 
 
 --- Dada una ventana, a la primera y última linea las rellena con "-".
 --- y a las demás con "|" solo en la primera y última columna.
---- En las esquiaunas pone "+".
+--- En las esquinas pone "+".
 --- + \+ ---- +
 --- + \|......|
 --- + \|......|
 --- + \+ ---- +
 --- @param salida Redirect La salida de texto en la que se va a encuadrar la ventana.
 --- ------------------------------
-function encuadrarVentana1(salida, izq, der)
+function graficos.encuadrarVentana1(salida, izq, der)
 
     izq = izq or false
     der = der or false
@@ -338,10 +380,4 @@ function encuadrarVentana1(salida, izq, der)
 end
 
 
---- Esta función es un simple sleep que determina una velocidad mínima para el SO
---- de manera que el usuario pueda leer los mensajes (que no suelen ser importantes).
-function dormirDefecto()
-
-    sleep(0.2)
-    
-end
+return graficos

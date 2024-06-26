@@ -1,7 +1,7 @@
 local favoritos = {
-    ["sosCalc"] = true,
-    ["sosChat"] = true,
-    ["sosX"] = true,
-    ["sosPinta"] = true,
+    ["sosDia"] = true,
+    ["sosNoche"] = true,
+    ["sosDesp"] = true,
+    ["sosTorm"] = true,
 }
  return favoritos

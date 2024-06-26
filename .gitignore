@@ -11,6 +11,8 @@ dist/
 .probando/
 .desklets/
 config.py
+configuracion.lua
+sOS/sistema/configuracion/configuracion.lua
 
 # Compiled C files
 *.out

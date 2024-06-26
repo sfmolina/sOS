@@ -1,7 +1,7 @@
 ------------------------------
 --  AUTOR:       @sfmolina  --
 --  Versión:     v1         --
---  Modificado:  14feb24    --
+--  Modificado:  26jun24    --
 ------------------------------
 
 
@@ -9,9 +9,8 @@
 --- IMPORTS --------------------------------------------------------------------
 
 
-dofile("sOS/graficos.lua")
-dofile("sOS/configuracion.lua")
-
+local graficos  = dofile("sOS/sistema/graficos.lua")
+local control   = dofile("sOS/sistema/control.lua")
 
 
 --- ATRIBUTOS ------------------------------------------------------------------
@@ -19,12 +18,15 @@ dofile("sOS/configuracion.lua")
 
 local perifericos = {}
 
-perifericos.monitor = { peripheral.find("monitor") }
-perifericos.hayMonitor = #perifericos.monitor ~= 0
+if control.getConfig("TIPO_COMPUTADOR") == 1 then
+    
+    perifericos.monitor = { peripheral.find("monitor") }
+    perifericos.hayMonitor = #perifericos.monitor ~= 0
+
+end
 
 perifericos.altavoz = { peripheral.find("speaker") }
 perifericos.hayAltavoz = #perifericos.altavoz ~= 0
-
 
 
 --- FUNCIONES ------------------------------------------------------------------
@@ -33,24 +35,24 @@ perifericos.hayAltavoz = #perifericos.altavoz ~= 0
 function perifericos.estadoConexion(estaConectado, nombreDispositivo, salidas)
 
     if estaConectado then
-        colorear(salidas, colors.green)
-        escribirTextoLN(salidas, nombreDispositivo .. " conectado")
+        graficos.colorear(salidas, colors.green)
+        graficos.escribirTextoLN(salidas, nombreDispositivo .. " conectado")
     else
-        colorear(salidas, colors.red)
-        escribirTextoLN(salidas, nombreDispositivo .. " no conectado")
+        graficos.colorear(salidas, colors.red)
+        graficos.escribirTextoLN(salidas, nombreDispositivo .. " no conectado")
     end
 
-    colorear(salidas, getConfig("COLORD_TEXTO"))
+    graficos.colorear(salidas, control.getConfig("COLORD_TEXTO"))
 
 end
 
 
 function perifericos.configurarPerfifericos(salidaTexto, salidaAudio)
 
-    escribirTextoLN(salidaTexto, "Comprobando perifericos...")
+    graficos.escribirTextoLN(salidaTexto, "Comprobando perifericos...")
 
 
-    dormirDefecto()
+    control.dormir()
 
 
     -- Si hay monitorres, se agregan a la salida de texto para que se imprima en los monitores tambien
@@ -66,7 +68,7 @@ function perifericos.configurarPerfifericos(salidaTexto, salidaAudio)
             table.insert(salidaTexto, mw)
 
             mw.clear()
-            local escala = getConfig("TAM_TEXTO")
+            local escala = control.getConfig("TAM_TEXTO")
             m.setTextScale(escala)
             mw.setCursorPos(1, 1)
 
@@ -74,10 +76,15 @@ function perifericos.configurarPerfifericos(salidaTexto, salidaAudio)
 
     end
 
-    perifericos.estadoConexion(perifericos.hayMonitor, "Monitor", salidaTexto)
+
+    if control.getConfig("TIPO_COMPUTADOR") == 1 then
+
+        perifericos.estadoConexion(perifericos.hayMonitor, "Monitor", salidaTexto)
+        
+    end
 
 
-    dormirDefecto()
+    control.dormir()
 
 
     if perifericos.hayAltavoz then
