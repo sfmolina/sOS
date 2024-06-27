@@ -30,5 +30,5 @@ To achieve this, I developed several libraries, such as `gráficos.lua` and `per
 
 - **Intuitive Interface**: User-friendly and easy to navigate design.
 - **Basic Functions**: In the current version, it allows configuring the `programas.lua` file to communicate with a "weather station" that collects messages and executes commands like setting the time to day or clearing the weather.
-- In the future, sOS should be able to include more customization and install applications easily. Currently, it has limitations and needs a redesign on how applications are handled, but it meets my most urgent goal: stopping my friends from asking me to run `/time set day`...
+- In the future, sOS should be able to include more customization and install applications easily. Currently, it has limitations and needs a redesign on how applications are handled, but it meets my most urgent goal: stopping my friends from asking me to run /time set day...
 
