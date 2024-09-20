@@ -12,7 +12,7 @@ Para lograrlo desarrollé diversas librerías, como `gráficos.lua` y `periferic
 
 - **Interfaz intuitiva**: Diseño amigable y fácil de navegar.
 - **Funciones básicas**: En la versión actual permite configurar el archivo `programas.lua` para comunicarse con una "estación meteorológica", que recoja los mensajes y ejecute comandos como hacer de día o clima despejado.
-- En un futuro, sOS debería ser capaz de incluir más perssonalización y de instalar aplicaciones de forma sencilla. Actualmente tiene carencias y falta rediseñar la forma en la que se tratan las aplicaciones, pero cumple mi objetivo más prioritario, que mis amigos dejen de pedirme que haga /time set day...
+- En un futuro, sOS debería ser capaz de incluir más personalización y de instalar aplicaciones de forma sencilla. Actualmente tiene carencias y falta rediseñar la forma en la que se tratan las aplicaciones, pero cumple mi objetivo más prioritario, que mis amigos dejen de pedirme que haga /time set day...
 
 # 
 
